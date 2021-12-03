@@ -317,9 +317,10 @@ def main():
     msg = ""
     dev_class = module.params['type']
     dev_name = module.params['name']
-    DEV = module.params['lvm']
+    attr = module.params['attr']
+    DEV = module.params['dev']
     
-    msg, DEV = load_dev(module, dev_name, dev_class, DEV)
+    msg, DEV = load_dev(module, dev_name, dev_class, attr, DEV)
 
     module.exit_json(msg=msg, ansible_facts=dict(DEV=DEV))
 
