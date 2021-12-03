@@ -284,22 +284,21 @@ def load_dev(module, dev_name, dev_class, get_attr, DEV):
             DEV[dev]={}
             DEV[dev]['name']=dev
             DEV[dev]['state']=state
-            if (not get_attr):
-                return msg,DEV
-
-            DEV[dev]['attr']={}
-            cmd = "lsattr -El %s" % dev
-            rc, out, err = module.run_command(cmd)
-            if rc != 0:
-                msg += "Command '%s' failed." % cmd
-            else:
-                attributes = {}
-                for ln in out.splitlines():
-                    attr_info = ln.split()
-                    attr_name = attr_info[0].strip()
-                    attr_value = attr_info[1].strip()
-                    attributes[attr_name] = attr_value
-                DEV[dev]['attr']=attributes
+            
+            if (get_attr):
+                DEV[dev]['attr']={}
+                cmd = "lsattr -El %s" % dev
+                rc, out, err = module.run_command(cmd)
+                if rc != 0:
+                    msg += "Command '%s' failed." % cmd
+                else:
+                    attributes = {}
+                    for ln in out.splitlines():
+                        attr_info = ln.split()
+                        attr_name = attr_info[0].strip()
+                        attr_value = attr_info[1].strip()
+                        attributes[attr_name] = attr_value
+                    DEV[dev]['attr']=attributes
 
     return msg, DEV
 
