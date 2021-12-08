@@ -19,8 +19,8 @@ module: dev_facts
 short_description: Reports Devices information as facts.
 
 description:
-- List and reports details about defined AIX Logical Volume Manager (LVM) components such as
-  Physical volumes, Logical volumes and Volume groups in Ansible facts.
+- List and reports details about defined AIX Device such as
+  Disks, Adapater, Tape ... in Ansible facts.
 version_added: '2.9'
 requirements:
 - AIX >= 7.1 TL3
@@ -28,44 +28,33 @@ requirements:
 options:
   name:
     description:
-    - Specifies the name of a LVM component.
+    - Specifies the name of a Devices component.
     type: str
     default: 'all'
-  component:
+  type:
     description:
-    - Specifies the type of LVM component to report information.
-      A(pv) specifies physical volume.
-      A(lv) specifies logical volume.
-      A(vg) specifies volume group.
-      C(all) specifies all previous LVM components to be reported.
-    type: str
-    choices: [pv, lv, vg, all]
-    default: 'all'
-  lvm:
+    - Specifies the class of Devices component to report information.
+  type: str
+     default: 'all'
+  dev:
     description:
-    - Users can provide the existing LVM facts to which the queried facts should be updated.
-      If not specified, the LVM facts in the ansible_facts will be replaced.
+    - Users can provide the existing DEV facts to which the queried facts should be updated.
+      If not specified, the DEV facts in the ansible_facts will be replaced.
     type: dict
     default: {}
 
 '''
 
 EXAMPLES = r'''
-- name: Gather all lvm facts
+- name: Gather all Dev facts
   lvm_facts:
 - name: Gather VG facts
   lvm_facts:
     name: all
-    component: vg
-- name: Update PV facts to existing LVM facts
+- name: Gather hdisk facts
   lvm_facts:
     name: all
-    component: pv
-    lvm: "{{ ansible_facts.LVM }}"
-- name: Gather LV facts
-  lvm_facts:
-    name: all
-    component: lv
+    type: disk
 '''
 
 RETURN = r'''
@@ -75,184 +64,25 @@ ansible_facts:
   returned: always
   type: complex
   contains:
-    lvm:
+    DEV:
       description:
-      - Contains a list of VGs, PVs and LVs.
+      - Contains a Dict of Devices.
       returned: success
       type: dict
       elements: dict
       contains:
-        VGs:
-          description:
-          - Contains the list of volume groups on the system.
-          returned: success
+        name: 
+          description: Devices name
+          returned: always
+          type: str 
+        state:
+          description: Status of device
+          returned: always
+          type: str
+        attr:
+          description: Dict of attributes
+          returned: when ask
           type: dict
-          elements: dict
-          contains:
-            name:
-              description:
-              - Volume Group name.
-              returned: always
-              type: str
-              sample: "rootvg"
-            vg_state:
-              description:
-              - State of the Volume Group.
-              returned: always
-              type: str
-              sample: "active"
-            num_lvs:
-              description:
-              - Number of logical volumes.
-              returned: always
-              type: str
-              sample: "2"
-            num_pvs:
-              description:
-              - Number of physical volumes.
-              returned: always
-              type: str
-              sample: "2"
-            total_pps:
-              description:
-              - Total number of physical partitions within the volume group.
-              returned: always
-              type: str
-              sample: "952"
-            free_pps:
-              description:
-              - Number of physical partitions not allocated.
-              returned: always
-              type: str
-              sample: "100"
-            pp_size:
-              description:
-              - Size of each physical partition.
-              returned: always
-              type: str
-              sample: "64 megabyte (s)"
-            size_g:
-              description:
-              - Total size of the volume group in gigabytes.
-              returned: always
-              type: str
-              sample: "18.99"
-            free_g:
-              description:
-              - Free space of the volume group in gigabytes.
-              returned: always
-              type: str
-              sample: "10.6"
-        PVs:
-          description:
-          - Contains a list of physical volumes on the system.
-          returned: success
-          type: dict
-          elements: dict
-          contains:
-            name:
-              description:
-              - PV name
-              returned: always
-              type: str
-              sample: "hdisk0"
-            vg:
-              description:
-              - Volume group to which the physical volume has been assigned.
-              returned: always
-              type: str
-              sample: "rootvg"
-            pv_state:
-              description:
-              - Physical volume state.
-              returned: always
-              type: str
-              sample: "active"
-            total_pps:
-              description:
-              - Total number of physical partitions in the physical volume.
-              returned: always
-              type: str
-              sample: "476"
-            free_pps:
-              description:
-              - Number of free physical partitions in the physical volume.
-              returned: always
-              type: str
-              sample: "130"
-            pp_size:
-              description:
-              - Size of each physical partition.
-              returned: always
-              type: str
-              sample: "64 megabyte (s)"
-            size_g:
-              description:
-              - Total size of the physical volume in gigabytes.
-              returned: always
-              type: str
-              sample: "18.99"
-            free_g:
-              description:
-              - Free space of the physical volume in gigabytes.
-              returned: always
-              type: str
-              sample: "10.6"
-        LVs:
-          description:
-          - Contains a list of logical volumes on the system.
-          returned: success
-          type: dict
-          elements: dict
-          contains:
-            name:
-              description:
-              - Logical volume name.
-              returned: always
-              type: str
-              sample: "hd1"
-            vg:
-              description:
-              - Volume group to which the Logical Volume belongs to.
-              returned: always
-              type: str
-              sample: "rootvg"
-            lv_state:
-              description:
-              - Logical Volume state.
-              returned: always
-              type: str
-              sample: "active"
-            type:
-              description:
-              - Logical volume type.
-              returned: always
-              type: str
-              sample: "jfs2"
-            LPs:
-              description:
-              - Total number of logical partitions in the logical volume.
-              returned: always
-              type: str
-              sample: "476"
-            PPs:
-              description:
-              - Total number of physical partitions in the logical volume.
-              returned: always
-              type: str
-              sample: "130"
-            PVs:
-              description:
-              - Number of physical volumes used by the logical volume.
-              returned: always
-              type: str
-              sample: "2"
-            mount_point:
-              description:
-              - File system mount point for the logical volume, if applicable.
-              returned: always
-              type: str
-              sample: "/home"
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -262,9 +92,11 @@ def load_dev(module, dev_name, dev_class, get_attr, DEV):
     """
     Get the details for the specified Dev or all
     arguments:
-        module  (dict): Ansible module argument spec.
-        name     (str): Device name.
-        DEV     (dict): DEV facts.
+        module       (dict): Ansible module argument spec.
+        dev_name      (str): Device name.
+        dev_class     (str): Device class
+        get_attr     (bool): Retrieve Device Attributs
+        DEV          (dict): DEV facts.
     return:
         msg  (str): message
         DEV (dict): DEV facts
@@ -307,7 +139,7 @@ def main():
     module = AnsibleModule(
         argument_spec=dict(
             name=dict(type='str', default='all'),
-            type=dict(type='str', default='all', choices=['disk', 'adapter', 'all']),
+            type=dict(type='str', default='all'),
             attr=dict(type='bool', default='yes'),
             dev=dict(type='dict', default={}),
         ),
