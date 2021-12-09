@@ -114,9 +114,9 @@ def load_dev(module, dev_name, dev_class, get_attr, DEV):
         for line in stdout.splitlines():
             dev = line.split()[0].strip()
             state = line.split()[1].strip()
-            dev={}
-            dev['name']=dev
-            dev['state']=state
+            dev_info={}
+            dev_info['name']=dev
+            dev_info['state']=state
             
             if (get_attr):
                 dev['attr']={}
@@ -131,9 +131,9 @@ def load_dev(module, dev_name, dev_class, get_attr, DEV):
                         attr_name = attr_info[0].strip()
                         attr_value = attr_info[1].strip()
                         attributes[attr_name] = attr_value
-                    dev['attr']=attributes
+                    dev_info['attr']=attributes
 
-            DEV['devices'].append(dev)
+            DEV['devices'].append(dev_info)
             
     return msg, DEV
 
