@@ -119,7 +119,7 @@ def load_dev(module, dev_name, dev_class, get_attr, DEV):
             dev_info['state']=state
             
             if (get_attr):
-                dev['attr']={}
+                dev_info['attr']={}
                 cmd = "lsattr -El %s" % dev
                 rc, out, err = module.run_command(cmd)
                 if rc != 0:
